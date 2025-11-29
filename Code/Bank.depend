@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1764351050 source:f:\iti\swe project\bank\main.cpp
+1764446360 source:f:\iti\swe project\bank\main.cpp
 	<iostream>
 	<vector>
 	<conio.h>
@@ -7,21 +7,20 @@
 	"Client.h"
 	"AccountManager.h"
 
-1764265326 f:\iti\swe project\bank\admin.h
+1764446884 f:\iti\swe project\bank\admin.h
 	"User.h"
-	"Client.h"
 	"AccountManager.h"
 	<iostream>
 
-1764265289 f:\iti\swe project\bank\user.h
+1764445774 f:\iti\swe project\bank\user.h
 	<string>
 
-1764266509 f:\iti\swe project\bank\accountmanager.h
+1764446697 f:\iti\swe project\bank\accountmanager.h
 	"Client.h"
 	<vector>
 	<string>
 
-1764436977 f:\iti\swe project\bank\client.h
+1764446697 f:\iti\swe project\bank\client.h
 	"User.h"
 	<iostream>
 	<vector>

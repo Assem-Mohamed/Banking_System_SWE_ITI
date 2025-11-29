@@ -17,13 +17,15 @@ private:
 public:
     Client() = default;
 
-    Client(string acc, string uname, string pass, string ph, double bal = 0.0)
-        : User(acc, uname, pass, ph), balance(bal) {}
-
     Client(string uname, string pass, string ph, double bal = 0.0)
         : User(generateID(), uname, pass, ph), balance(bal) {}
 
-    void viewProfile() const {
+    Client(string acc, string uname, string pass, string ph, double bal = 0.0)
+        : User(acc, uname, pass, ph), balance(bal) {}
+
+    bool isActive() const { return status == "active"; }
+
+    void viewProfile() const override {
         cout << "\n--- Client Profile ---\n";
         cout << "AccID: " << AccID
              << "\nUsername: " << username
@@ -31,18 +33,27 @@ public:
              << "\nStatus: " << status << endl;
     }
 
-    void transferOut(const string& targetAccID, double amount) {
-        if (status != "active") {
-            cout << "Account not active.\n";
-            return;
+
+    bool transferOut(const string& targetAccID, double amount) {
+        if (!isActive()) {
+            cout << "Your account is disabled. Transfer denied.\n";
+            return false;
         }
-        if (amount <= balance) {
-            balance -= amount;
-            transactions.push_back("Transferred " + to_string(amount) + " to " + targetAccID);
-            cout << "Transfer successful.\n";
-        } else {
+
+        if (amount <= 0) {
+            cout << "Invalid amount! Must be greater than zero.\n";
+            return false;
+        }
+
+        if (amount > balance) {
             cout << "Insufficient balance!\n";
+            return false;
         }
+
+        balance -= amount;
+        transactions.push_back("Transferred " + to_string(amount) + " to " + targetAccID);
+        cout << "Transfer successful.\n";
+        return true;
     }
 
     void addIncoming(const string& fromAccID, double amount) {
@@ -56,12 +67,14 @@ public:
             cout << "No transactions yet.\n";
             return;
         }
-        for (const auto &t : transactions) cout << t << endl;
+        for (const auto& t : transactions) cout << t << endl;
     }
 
     double getBalance() const { return balance; }
     void setStatus(const string& st) { status = st; }
     string getStatus() const { return status; }
+
+
 
 private:
     static string generateID() {

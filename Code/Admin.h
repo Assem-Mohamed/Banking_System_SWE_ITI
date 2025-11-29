@@ -2,61 +2,81 @@
 #define ADMIN_H
 
 #include "User.h"
-#include "Client.h"
 #include "AccountManager.h"
 #include <iostream>
 using namespace std;
 
 class Admin : public User {
-public:
-    Admin(string acc, string uname, string pass, string ph)
-        : User(acc, uname, pass, ph) {}
+private:
+    AccountManager* accountMgr;
+    static int nextAdminID;
 
-    void viewClients(AccountManager& mgr) {
+    static string generateAdminID() {
+        string id = "A" + string(3 - to_string(nextAdminID).length(), '0') + to_string(nextAdminID++);
+        return id;
+    }
+
+public:
+
+    Admin(string acc, string uname, string pass, string ph, AccountManager* mgr)
+        : User(acc == "" ? generateAdminID() : acc, uname, pass, ph),
+          accountMgr(mgr) {}
+
+    void viewProfile() const override {
+        cout << "\n--- Admin Profile ---\n";
+        cout << "AccID: " << AccID
+             << "\nUsername: " << username
+             << "\nPhone: " << phoneNumber << endl;
+    }
+
+    void viewClients() {
         cout << "\n--- All Clients ---\n";
-        for (auto c : mgr.getAllClients()) {
+        for (auto c : accountMgr->getAllClients()) {
             c->viewProfile();
             cout << "-----------------\n";
         }
     }
 
-    Client* searchClient(AccountManager& mgr, const string& accID) {
-        return mgr.findByAccID(accID);
+    Client* searchClient(const string& accID) {
+        return accountMgr->findByAccID(accID);
     }
 
-    void enableAccount(AccountManager& mgr, const string& accID) {
-        Client* c = mgr.findByAccID(accID);
-        if (c) {
+    void enableAccount(const string& accID) {
+        Client* c = accountMgr->findByAccID(accID);
+        if (!c) cout << "Client not found.\n";
+        else {
             c->setStatus("active");
             cout << "Account enabled.\n";
-        } else {
-            cout << "Client not found.\n";
         }
     }
 
-    void disableAccount(AccountManager& mgr, const string& accID) {
-        Client* c = mgr.findByAccID(accID);
-        if (c) {
+    void disableAccount(const string& accID) {
+        Client* c = accountMgr->findByAccID(accID);
+        if (!c) cout << "Client not found.\n";
+        else {
             c->setStatus("disabled");
             cout << "Account disabled.\n";
-        } else {
-            cout << "Client not found.\n";
         }
     }
 
-    void viewStatistics(AccountManager& mgr) {
-        int total = mgr.getAllClients().size();
-        int active = 0;
-        int disabled = 0;
-        for (auto c : mgr.getAllClients()) {
+    void viewStatistics() {
+        int total = accountMgr->getAllClients().size();
+        int active = 0, disabled = 0;
+
+        for (auto c : accountMgr->getAllClients()) {
             if (c->getStatus() == "active") active++;
             else disabled++;
         }
+
         cout << "\n--- Statistics ---\n";
         cout << "Total clients: " << total
              << "\nActive: " << active
              << "\nDisabled: " << disabled << endl;
     }
+
+    AccountManager* getManager() { return accountMgr; }
 };
+
+int Admin::nextAdminID = 1;
 
 #endif
